@@ -1,6 +1,6 @@
 package com.decagon.mobiletesttask.data.remotedata.dto
 
-import com.decagon.mobiletesttask.domain.model.ResultData
+import com.decagon.mobiletesttask.domain.model.UserDetails
 
 data class Result(
     val cell: String,
@@ -17,8 +17,8 @@ data class Result(
     val registered: Registered
 )
 
-fun Result.toResultData():ResultData{
-    return ResultData(
+fun Result.toResultData():UserDetails{
+    return UserDetails(
         id = id,
         name = name,
         gender = gender,
