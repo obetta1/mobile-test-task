@@ -1,16 +1,22 @@
 package com.decagon.mobiletesttask.presentation
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.SavedStateHandle
+import android.util.Log
+import android.widget.Toast
+import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.text.toLowerCase
+import androidx.compose.ui.text.toUpperCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.decagon.mobiletesttask.common.Resource
+import com.decagon.mobiletesttask.domain.model.UserDetails
 import com.decagon.mobiletesttask.domain.usecase.GetUsersUseCase
 import com.decagon.mobiletesttask.presentation.userdatail.UserDetailState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import okio.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,27 +24,53 @@ class UserViewModel @Inject constructor(
     private val getUsersUseCase: GetUsersUseCase,
 ) :ViewModel(){
 
-    private val _state = mutableStateOf(UserDetailState())
-    val state:State<UserDetailState> get() = _state
+    private val _state = mutableStateListOf<UserDetailState>()
+    val state: SnapshotStateList<UserDetailState> get() = _state
+
+    val users = mutableStateListOf<UserDetailState>()
+
+    private val _stateFilter = mutableStateListOf<UserDetails>()
+    val stateFilter: SnapshotStateList<UserDetails >get() = _stateFilter
+
+
 
     init {
-        getUserDetails()
+        for (i in 0..2){
+            getUserDetails()
+        }
     }
 
-    private fun getUserDetails(){
+    fun filterList(search:String):List<UserDetails>{
+
+        return  if (search.isEmpty()){
+            stateFilter
+        }else{
+            stateFilter.filter {
+                it.name.last.lowercase().contains(search.lowercase())
+                        || it.name.first.lowercase().contains(search.lowercase())
+            }
+        }
+    }
+
+     private fun getUserDetails(){
         viewModelScope.launch {
-            getUsersUseCase().onEach { result->
-                when(result){
-                    is Resource.Loading->{
-                        _state.value = UserDetailState(isLoading = true)
-                    }
-                    is Resource.Success ->{
-                        _state.value = UserDetailState(userData = result.data!!)
-                    }
-                    is Resource.Error ->{
-                        _state.value = UserDetailState(error = result.message!!)
+            try {
+                getUsersUseCase().collect { result ->
+                    when (result) {
+                        is Resource.Loading -> {
+                            _state.add(UserDetailState(isLoading = true))
+                        }
+                        is Resource.Success -> {
+                            _state.add(UserDetailState(userData = result.data!!.results))
+                            _stateFilter.addAll(result.data.results)
+                        }
+                        is Resource.Error -> {
+                            _state.add(UserDetailState(error = result.message!!))
+                        }
                     }
                 }
+            }catch (e:IOException){
+
             }
         }
     }
