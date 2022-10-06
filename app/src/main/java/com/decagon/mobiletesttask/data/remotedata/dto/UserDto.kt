@@ -1,6 +1,5 @@
 package com.decagon.mobiletesttask.data.remotedata.dto
 
-import com.decagon.mobiletesttask.domain.model.ResultData
 import com.decagon.mobiletesttask.domain.model.UserData
 
 data class UserDto(
@@ -11,6 +10,6 @@ data class UserDto(
 fun UserDto.toUserData():UserData{
     return UserData(
         info = info,
-        results = results
+        results = results.map { it.toResultData() }
     )
 }

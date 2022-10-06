@@ -6,5 +6,5 @@ import retrofit2.http.GET
 interface RandomUserApi {
 
     @GET("api")
-    suspend fun getUserData():List<UserDto>
+    suspend fun getUserData():UserDto
 }
