@@ -24,6 +24,7 @@ fun Result.toResultData():UserDetails{
         gender = gender,
         phone = phone,
         email = email,
+        location=location,
         medium = picture.medium,
         thumbnail = picture.thumbnail
     )

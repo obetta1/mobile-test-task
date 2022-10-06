@@ -8,6 +8,7 @@ data class UserDetails(
     val email: String,
     val gender: String,
     val phone: String,
+    val location:Location,
     val medium: String,
     val thumbnail: String
 )

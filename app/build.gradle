@@ -107,4 +107,15 @@ dependencies {
     //okhttp
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
     implementation 'com.squareup.okhttp3:okhttp:4.9.1'
+
+    //coil image loader
+    implementation("io.coil-kt:coil-compose:2.0.0-rc01")
+
+    //navigation
+    implementation 'io.github.raamcosta.compose-destinations:core:1.1.2-beta'
+    ksp 'io.github.raamcosta.compose-destinations:ksp:1.1.2-beta'
+
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+
+
 }

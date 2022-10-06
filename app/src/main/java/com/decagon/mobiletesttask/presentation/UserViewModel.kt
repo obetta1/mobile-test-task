@@ -1,11 +1,7 @@
 package com.decagon.mobiletesttask.presentation
 
-import android.util.Log
-import android.widget.Toast
-import androidx.compose.runtime.*
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.ui.text.toLowerCase
-import androidx.compose.ui.text.toUpperCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.decagon.mobiletesttask.common.Resource
@@ -13,8 +9,6 @@ import com.decagon.mobiletesttask.domain.model.UserDetails
 import com.decagon.mobiletesttask.domain.usecase.GetUsersUseCase
 import com.decagon.mobiletesttask.presentation.userdatail.UserDetailState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import okio.IOException
 import javax.inject.Inject
@@ -27,12 +21,8 @@ class UserViewModel @Inject constructor(
     private val _state = mutableStateListOf<UserDetailState>()
     val state: SnapshotStateList<UserDetailState> get() = _state
 
-    val users = mutableStateListOf<UserDetailState>()
-
     private val _stateFilter = mutableStateListOf<UserDetails>()
     val stateFilter: SnapshotStateList<UserDetails >get() = _stateFilter
-
-
 
     init {
         for (i in 0..2){
@@ -70,7 +60,6 @@ class UserViewModel @Inject constructor(
                     }
                 }
             }catch (e:IOException){
-
             }
         }
     }

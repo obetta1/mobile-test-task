@@ -1,5 +1,6 @@
 package com.decagon.mobiletesttask.di
 
+import android.util.Log
 import com.decagon.mobiletesttask.common.Constants
 import com.decagon.mobiletesttask.data.remotedata.RandomUserApi
 import com.decagon.mobiletesttask.data.repository.UserRepositoryImpl
@@ -23,6 +24,7 @@ class AppModule {
     @Singleton
     fun provideRandomUserApi(): RandomUserApi {
         val logger = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+        Log.d("USER", "API MODULE ")
 
         val okhttpClient = OkHttpClient.Builder()
             .connectTimeout(30L, TimeUnit.SECONDS)
@@ -30,6 +32,7 @@ class AppModule {
             .writeTimeout(30L, TimeUnit.SECONDS)
             .addInterceptor(logger)
             .build()
+        Log.d("USER", "Retrofit ")
 
         return Retrofit.Builder()
             .baseUrl(Constants.BASE_URI)
@@ -42,6 +45,8 @@ class AppModule {
     @Provides
     @Singleton
     fun provideUserRepository(api: RandomUserApi): UserRepository {
+        Log.d("USER", "REOSITORY MODULE ")
+
         return UserRepositoryImpl(api)
     }
 }

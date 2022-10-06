@@ -5,7 +5,7 @@ import com.decagon.mobiletesttask.domain.model.UserDetails
 
 data class UserDetailState(
     val isLoading: Boolean = false,
-    val userData: List<UserData>? = null,
+    val userData: List<UserDetails>? = null,
     val error: String = ""
 )
 
