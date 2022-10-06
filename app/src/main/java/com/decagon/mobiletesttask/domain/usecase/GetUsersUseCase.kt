@@ -1,5 +1,6 @@
 package com.decagon.mobiletesttask.domain.usecase
 
+import android.util.Log
 import com.decagon.mobiletesttask.common.Resource
 import com.decagon.mobiletesttask.data.remotedata.dto.UserDto
 import com.decagon.mobiletesttask.data.remotedata.dto.toUserData
@@ -14,10 +15,12 @@ import javax.inject.Inject
 class GetUsersUseCase @Inject constructor(
     private val repository:UserRepository
 ){
-    operator fun invoke():Flow<Resource<List<UserData>>> = flow {
+    suspend operator fun invoke():Flow<Resource<UserData>> = flow {
+        Log.d("USER", "usecase ")
+
         try {
             emit(Resource.Loading())
-            val userData = repository.getUserData().map { it.toUserData() }
+            val userData = repository.getUserData().toUserData()
             emit(Resource.Success(userData))
         }catch (e:HttpException){
             emit(Resource.Error(e.localizedMessage ?: "Error has occurred"))

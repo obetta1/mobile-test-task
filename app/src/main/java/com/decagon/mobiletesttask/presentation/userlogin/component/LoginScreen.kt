@@ -7,19 +7,20 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,6 +29,7 @@ import com.decagon.mobiletesttask.common.validatePassword
 import com.decagon.mobiletesttask.presentation.destinations.UserDetailsScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+
 @Destination(start = true)
 @Composable
 fun LoginScreen(
@@ -40,6 +42,9 @@ fun LoginScreen(
         mutableStateOf("")
     }
     var emailErrorState by remember {
+        mutableStateOf(false)
+    }
+    var showPassword by remember {
         mutableStateOf(false)
     }
     var passwordErrorState by remember {
@@ -71,17 +76,23 @@ fun LoginScreen(
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 10.dp, bottom = 5.dp),
-            shape = RoundedCornerShape(20.dp),
+                .padding(top = 10.dp, bottom = 5.dp)
+                .semantics { contentDescription = "email textfield" },
+            shape = RoundedCornerShape(15.dp),
             label = {Text(text = "Enter email")},
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                backgroundColor = Color.LightGray,
+                backgroundColor = Color(0xFFF0EBEA),
                 errorBorderColor = Color.Red,
                 focusedBorderColor = Color.Green,
+                unfocusedBorderColor = Color.White
             ),
             isError = emailErrorState,
             leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "emailIcon") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                autoCorrect = true,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
         )
         if (emailErrorState){
             Text(
@@ -103,17 +114,35 @@ fun LoginScreen(
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 10.dp, bottom = 5.dp),
-                shape = RoundedCornerShape(20.dp),
+                    .padding(top = 10.dp, bottom = 5.dp)
+                    .semantics { contentDescription = "password textfield" },
+                shape = RoundedCornerShape(15.dp),
                 label = {Text(text = "Enter password")},
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = Color.LightGray,
+                    backgroundColor = Color(0xFFF0EBEA),
                     errorLabelColor = Color.Red,
-                    errorLeadingIconColor = Color.Red
+                    errorLeadingIconColor = Color.Red,
+                    focusedBorderColor = Color.Green,
+                    unfocusedBorderColor = Color.White
                 ),
                 isError = passwordErrorState,
                 leadingIcon = { Icon(imageVector = Icons.Default.Edit, contentDescription = "emailIcon") },
-                visualTransformation = PasswordVisualTransformation(),
+
+            visualTransformation =
+            if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                val passwordIcon = if (showPassword)
+                    Icons.Filled.Visibility
+                else Icons.Filled.VisibilityOff
+
+                // This is used to localized description for accessibility services
+                val description = if (showPassword) "Hide password" else "Show password"
+
+                // This is used to toggle button to hide or display password
+                IconButton(onClick = {showPassword = !showPassword}){
+                    Icon(imageVector  = passwordIcon, description)
+                }
+            },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
         if (passwordErrorState){
@@ -141,15 +170,17 @@ fun LoginScreen(
                       emailErrorState = false
                   }else{
                       emailErrorState = !validateEmail
-                      if (validatePassword(passwordState).isNotEmpty()){
+                      if (validatePassword.isNotEmpty()){
                           passwordErrorState =true
-                          passwordErrorText = validatePassword(passwordState)[0]
+                          passwordErrorText = validatePassword[0]
                       }else{
                           passwordErrorState = false
                       }
                   }
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics { contentDescription = "Login button" },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color.Black,
                 contentColor = Color.White)
